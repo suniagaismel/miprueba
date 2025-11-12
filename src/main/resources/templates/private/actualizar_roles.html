@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control - Actualizar Roles</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="panel-control">
+
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+    <!-- Barra lateral -->
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- ADMINISTRADOR -->
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi informacion</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_ventas}"><i class="fas fa-chart-line"></i> Reporte de Ventas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_reservas}"><i class="fas fa-calendar-check"></i> Reporte de Reservas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_pqrs}"><i class="fas fa-envelope-open-text"></i> Reporte de PQRS</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/actualizar_roles}"><i class="fas fa-user-cog"></i> Actualizar Roles</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/gestionar_productores}"><i class="fas fa-tractor"></i> Gestionar Productores</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/usuarios_registrados}"><i class="fas fa-users"></i> Usuarios Registrados</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/dashboard}"><i class ="fas fa-chart-line"></i> Reporte general</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="panel-content">
+        <h1>Actualizar Rol de Usuarios</h1>
+
+        <form th:action="@{/private/actualizar_roles}" method="get" class="filtro-form">
+            <input type="text" name="valor" placeholder="Buscar..." class="filtro-input">
+            <select name="criterio" class="filtro-select">
+                <option value="">Selecciona un criterio</option>
+                <option value="id">ID Usuario</option>
+                <option value="nombre">Nombre</option>
+                <option value="documento">Documento</option>
+                <option value="correo">Correo</option>
+            </select>
+            <button type="submit" class="filtro-btn">Filtrar</button>
+
+        </form>
+
+        <section class="info-table">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>ID Usuario</th>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Documento</th>
+                <th>Dirección</th>
+                <th>Rol actual</th>
+                <th>Actualizar Rol</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="usuario : ${usuarios}">
+                <td th:text="${usuario.Id}">1</td>
+                <td th:text="${usuario.nombre}">usuario123</td>
+                <td th:text="${usuario.nombreUsuario}">Nombre</td>
+                <td th:text="${usuario.correo}">correo@ejemplo.com</td>
+                <td th:text="${usuario.documento}">123456</td>
+                <td th:text="${usuario.direccion}">Calle 123</td>
+                <td th:text="${usuario.rol}">cliente</td>
+                <td>
+                    <form th:action="@{/private/actualizarRol}" method="post">
+                        <input type="hidden" name="id_usuario" th:value="${usuario.Id}" />
+                        <select name="nuevo_rol" class="form-control" required>
+                            <option disabled selected value="">Seleccionar</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="productor">Productor</option>
+                            <option value="administrador">Administrador</option>
+                        </select>
+                        <button type="submit">Actualizar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(usuarios)}">
+                <td colspan="8">No hay usuarios registrados</td>
+            </tr>
+            </tbody>
+        </table>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

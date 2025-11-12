@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="panel-control">
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- ADMINISTRADOR -->
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi informacion</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_ventas}"><i class="fas fa-chart-line"></i> Reporte de Ventas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_reservas}"><i class="fas fa-calendar-check"></i> Reporte de Reservas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_pqrs}"><i class="fas fa-envelope-open-text"></i> Reporte de PQRS</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/actualizar_roles}"><i class="fas fa-user-cog"></i> Actualizar Roles</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/gestionar_productores}"><i class="fas fa-tractor"></i> Gestionar Productores</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/usuarios_registrados}"><i class="fas fa-users"></i> Usuarios Registrados</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+
+    <main class="panel-content">
+        <h1>Productos Publicados</h1>
+        <section class="info-table">
+        <table border="1">
+            <tr>
+                <th>ID inventario</th>
+                <th>ID Producto</th>
+                <th>Producto</th>
+                <th>Nombre productor</th>
+                <th>Precio</th>
+                <th>Fecha de cosecha</th>
+                <th>Peso kg</th>
+                <th>Stock</th>
+                <th>Descripcion</th>
+                <th>Numero de referencia</th>
+            </tr>
+            <tr th:each="item : ${inventario}">
+                <td th:text="${item.ID_inventario}">1</td>
+                <td th:text="${item.ID_producto}">2</td>
+                <td th:text="${item.Nombre_producto}">Nombre</td>
+                <td th:text="${item.productor}">Productor</td>
+                <td th:text="${item.Precio}">Precio</td>
+                <td th:text="${item.Fecha_cosecha}">2024-01-01</td>
+                <td th:text="${item.Peso_kg}">10</td>
+                <td th:text="${item.stock}">100</td>
+                <td th:text="${item.Descripcion}">Descripción</td>
+                <td th:text="${item.Numero_referencia}">ABC123</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(inventario)}">
+                <td colspan="10">No hay productos registrados</td>
+            </tr>
+        </table>
+        </section>
+    </main>
+</div>
+</body>
+</html>

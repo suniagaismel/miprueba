@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="panel-control">
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- PRODUCTOR -->
+                <li th:if="${rol == 'productor'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi informacion</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/ofertar_producto}"><i class="fas fa-seedling"></i> Publicar Producto</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/reservar_producto}"><i class="fas fa-seedling"></i>Ofertar proximos a salir</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/gestionar_productos}"><i class="fas fa-boxes"></i> Gestionar Productos</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/gestionar_ventas}"><i class="fas fa-cash-register"></i> Gestionar Ventas</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/informacion_mercados}" class="active"><i class="fas fa-chart-line"></i> Informacion mercado</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/buenas_practicas}"><i class="fas fa-leaf"></i> Buenas Prácticas</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+
+    <main class="panel-content">
+        <h1>Productos registrados en el sistema: <span th:text="${usuario}"></span></h1>
+        <div class="table-actions">
+            <form th:action="@{/private/gestionar_productos}" method="get" class="filtro-form">
+                <input type="text" name="valor" placeholder="Buscar..." class="filtro-input">
+                <select name="criterio" class="filtro-select">
+                    <option value="">Selecciona un criterio</option>
+                    <option value="id">ID de Producto</option>
+                    <option value="producto">Producto</option>
+                    <option value="fecha">Fecha (YYYY-MM-DD)</option>
+                </select>
+                <button type="submit" class="filtro-btn">Filtrar</button>
+            </form>
+
+            <form th:action="@{/private/export/gestionar_productos}" method="get" class="export-form">
+                <button type="submit" class="export-btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </form>
+        </div>
+
+        <section class="info-table">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>IMAGEN</th>
+                <th>PRODUCTO</th>
+                <th>DESCRIPCIÓN</th>
+                <th>PRECIO</th>
+                <th>PESO Kg</th>
+                <th>STOCK</th>
+                <th>ESTADO</th>
+                <th>FECHA</th>
+                <th colspan="2">ACCIONES</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="producto : ${listaProductos}">
+                <td th:text="${producto.id}"></td>
+                <td>
+                    <img th:src="@{${producto.imagen}}" alt="Imagen del producto" th:max-width="100vh" th:height="80px">
+                </td>
+                <td th:text="${producto.nombre}"></td>
+                <td th:text="${producto.descripcion}"></td>
+                <td th:text="${producto.precio}"></td>
+                <td th:text="${producto.pesoKg}"></td>
+                <td th:text="${producto.stock}"></td>
+                <td th:text="${producto.estado}"></td>
+                <td th:text="${producto.fechaCosecha}"></td>
+                <td>
+                    <form action="/forms/editar_producto" method="get">
+                        <input type="hidden" name="id" th:value="${producto.id}" />
+                        <button type="submit" class="btn-acion-gestion-producto">Editar</button>
+                    </form>
+                    <form th:action="@{/private/actualizarEstadoProducto}" method="get">
+                        <input type="hidden" name="id" th:value="${producto.id}" />
+                        <select name="estado" class="form-control" required>
+                            <option disabled selected value="">Estado</option>
+                            <option value="disponible">Disponible</option>
+                            <option value="Agotado">Agotado</option>
+                        </select>
+                        <button type="submit">Actualizar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(listaProductos)}">
+                <td colspan="10">No tienes productos registrados.</td>
+            </tr>
+            </tbody>
+        </table>
+        </section>
+    </main>
+</div>
+</body>
+</html>

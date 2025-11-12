@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .cerrar {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-calificacion {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-cancelar {
+            background: #e57373;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-cancelar:hover {
+            background: #d32f2f;
+        }
+
+        .btn-guardar {
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-guardar:hover {
+            background: #2e7d32;
+        }
+
+        @keyframes fadeIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="panel-control">
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- CLIENTE -->
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi
+                    informacion</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/gestionar_reservas}"><i
+                        class="fas fa-calendar-alt"></i> Gestionar Reservas</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/gestionar_compra}"><i
+                        class="fas fa-shopping-cart"></i> Gestionar Compras</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/productos}"><i class="fas fa-carrot"></i> Ver
+                    Productos</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/reservas}"><i class="fas fa-plus-circle"></i>
+                    Realizar Reserva</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/ser_productor}"><i class="fas fa-tractor"></i>
+                    Ser Productor</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="panel-content">
+        <h1>Compras registradas en el sistema para: <span th:text="${usuario}"></span></h1>
+
+        <div class="table-actions">
+            <form th:action="@{/private/gestionar_compra}" method="get" class="filtro-form">
+                <label>
+                    <input type="text" name="valor" placeholder="Buscar..." class="filtro-input">
+                </label>
+                <label>
+                    <select name="criterio" class="filtro-select">
+                        <option value="">Selecciona un criterio</option>
+                        <option value="id">ID de Venta</option>
+                        <option value="producto">Producto</option>
+                        <option value="fecha">Fecha (YYYY-MM-DD)</option>
+                        <option value="vendedor">Vendedor</option>
+                    </select>
+                </label>
+                <button type="submit" class="filtro-btn">Filtrar</button>
+            </form>
+
+            <form th:action="@{/private/export/gestionar_compra}" method="get">
+                <button type="submit" class="export-btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </form>
+
+        </div>
+
+        <section class="info-table">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID Venta</th>
+                    <th>Vendedor</th>
+                    <th>Producto</th>
+                    <th>Cantidad (Kg)</th>
+                    <th>Total ($)</th>
+                    <th>Fecha</th>
+                    <th>Calificación</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="venta : ${listaCompra}">
+                    <td th:text="${venta.idVenta}">1</td>
+                    <td th:text="${venta.vendedor.nombreUsuario}">vendedor456</td>
+                    <td th:text="${venta.producto.nombre}">Papa</td>
+                    <td th:text="${venta.cantidadKg}">10</td>
+                    <td th:text="${venta.totalVenta}">50000</td>
+                    <td th:text="${#temporals.format(venta.fechaVenta, 'yyyy-MM-dd')}">2024-06-01</td>
+                    <td>
+                        <button type="button"
+                                th:onclick="|abrirModal(${venta.idVenta}, ${venta.producto.id})|"
+                                class="btn-icon">
+                            🥕
+                        </button>
+                    </td>
+
+                </tr>
+                <tr th:if="${#lists.isEmpty(listaCompra)}">
+                    <td colspan="10">No tienes compras registradas en este momento.</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- MODAL PARA CALIFICACIÓN -->
+    <div id="modalCalificacion" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="cerrar" onclick="cerrarModal()">&times;</span>
+            <h2 class="modal-title">Calificar compra</h2>
+            <form th:action="@{/private/guardar_calificacion}" method="post" class="form-calificacion">
+                <input type="hidden" id="idVenta" name="idVenta">
+                <input type="hidden" id="productoId" name="productoId">
+
+                <div class="form-group">
+                    <label for="estrellas">Calificación:</label>
+                    <select name="estrellas" id="estrellas" required>
+                        <option value="">Selecciona</option>
+                        <option value="1">🥕</option>
+                        <option value="2">🥕🥕</option>
+                        <option value="3">🥕🥕🥕</option>
+                        <option value="4">🥕🥕🥕🥕</option>
+                        <option value="5">🥕🥕🥕🥕🥕</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="comentario">Comentario:</label>
+                    <textarea id="comentario" name="comentario" rows="5" placeholder="Escribe tu opinión aquí..."
+                              required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirModal(idVenta, productoId) {
+        document.getElementById("idVenta").value = idVenta;
+        document.getElementById("productoId").value = productoId;
+        const modal = document.getElementById("modalCalificacion");
+        modal.style.display = "flex";
+    }
+
+
+    function cerrarModal() {
+        const modal = document.getElementById("modalCalificacion");
+        modal.style.display = "none";
+    }
+
+    document.addEventListener('click', function (e) {
+        const modal = document.getElementById('modalCalificacion');
+        if (!modal) return;
+        if (e.target === modal) cerrarModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrarModal();
+    });
+</script>
+
+</body>
+</html>

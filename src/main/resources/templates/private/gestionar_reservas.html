@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css?v=1}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="panel-control">
+
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- CLIENTE -->
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi informacion</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/gestionar_reservas}"><i class="fas fa-calendar-alt"></i> Gestionar Reservas</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/gestionar_compra}"><i class="fas fa-shopping-cart"></i> Gestionar Compras</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/productos}"><i class="fas fa-carrot"></i> Ver Productos</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/public/reservas}"><i class="fas fa-plus-circle"></i> Realizar Reserva</a></li>
+                <li th:if="${rol == 'cliente'}"><a th:href="@{/private/ser_productor}"><i class="fas fa-tractor"></i> Ser Productor</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="panel-content">
+        <h1>Reservas registradas en el sistema para: <span th:text="${usuario}"></span></h1>
+        <div class="table-actions">
+            <div class="filtro-reservas">
+                <form th:action="@{/private/gestionar_reservas}" method="get" class="filtro-form">
+                    <input type="text" name="valor" placeholder="Buscar..." class="filtro-input">
+                    <select name="criterio" class="filtro-select">
+                        <option value="">Selecciona un criterio</option>
+                        <option value="id">ID de Reserva</option>
+                        <option value="producto">Producto</option>
+                        <option value="fecha">Fecha (YYYY-MM-DD)</option>
+                    </select>
+                    <button type="submit" class="filtro-btn">Filtrar</button>
+                </form>
+            </div>
+
+            <form th:action="@{/export/gestionar_reservas}" method="get">
+                <button type="submit" class="export-btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </form>
+        </div>
+
+        <section class="info-table">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>ID Reserva</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Producto</th>
+                <th>Cantidad (Kg)</th>
+                <th>Método de pago</th>
+                <th>Fecha de reserva</th>
+                <th colspan="2">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reserva : ${listaReservas}">
+                <td th:text="${reserva.idReserva}"></td>
+                <td th:text="${reserva.usuarioDocumento}"></td>
+                <td th:text="${reserva.usuarioTelefono}"></td>
+                <td th:text="${reserva.usuarioCorreo}"></td>
+                <td th:text="${reserva.producto}"></td>
+                <td th:text="${reserva.cantidadKg}"></td>
+                <td th:text="${reserva.metodoPago}"></td>
+                <td th:text="${reserva.fechaReserva}"></td>
+                <td><a th:href="@{'/private/editar_reserva?id=' + ${reserva.idReserva}}">Editar</a></td>
+                <td><a th:href="@{'/private/cancelar_reserva?id=' + ${reserva.idReserva}}"
+                   onclick="return confirmarCancelacion(this.href)">Cancelar</a></td>
+
+            </tr>
+            <tr th:if="${#lists.isEmpty(listaReservas)}">
+                <td colspan="10">No tienes reservas registradas en este momento.</td>
+            </tr>
+            </tbody>
+        </table>
+        </section>
+    </main>
+</div>
+<script>
+    function confirmarCancelacion(url) {
+        const confirmacion = confirm("¿Estás seguro de cancelar esta reserva?");
+        if (confirmacion) {
+            window.location.href = url;
+        }
+        return false;
+    }
+</script>
+
+</body>
+</html>

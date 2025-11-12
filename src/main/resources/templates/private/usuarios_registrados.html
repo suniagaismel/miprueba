@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control - Usuarios Registrados</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+</head>
+<body class="panel-control">
+
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- ADMINISTRADOR -->
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/panel_control}"><i class="fas fa-person"></i> Mi informacion</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_ventas}"><i
+                        class="fas fa-chart-line"></i> Reporte de Ventas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_reservas}"><i
+                        class="fas fa-calendar-check"></i> Reporte de Reservas</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/reporte_pqrs}"><i
+                        class="fas fa-envelope-open-text"></i> Reporte de PQRS</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/actualizar_roles}"><i
+                        class="fas fa-user-cog"></i> Actualizar Roles</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/gestionar_productores}"><i class="fas fa-tractor"></i> Gestionar Productores</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/usuarios_registrados}"><i
+                        class="fas fa-users"></i> Usuarios Registrados</a></li>
+                <li th:if="${rol == 'administrador'}"><a th:href="@{/private/dashboard}"><i class ="fas fa-chart-line"></i> Reporte general</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+
+    <main class="panel-content">
+        <h1>Usuarios registrados en el sistema</h1>
+        <div class="table-actions">
+            <form th:action="@{/private/usuarios_registrados}" method="get" class="filtro-form">
+                <input type="text" name="valor" placeholder="Buscar..." class="filtro-input">
+                <select name="criterio" class="filtro-select">
+                    <option value="">Selecciona un criterio</option>
+                    <option value="id">ID Usuario</option>
+                    <option value="usuario">nombre</option>
+                    <option value="correo">Correo</option>
+                    <option value="documento">Documento</option>
+                </select>
+                <button type="submit" class="filtro-btn">Filtrar</button>
+            </form>
+
+            <form th:action="@{/export/usuarios_registrados}" method="get" class="export-form">
+                <button type="submit" class="export-btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </form>
+        </div>
+
+        <section class="info-table">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Documento</th>
+                    <th>Ubicación</th>
+                    <th>Correo</th>
+                    <th>Método de pago</th>
+                    <th>Fecha de nacimiento</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.Id}">1</td>
+                    <td th:text="${usuario.nombreUsuario}">jdoe</td>
+                    <td th:text="${usuario.documento}">123456789</td>
+                    <td th:text="${usuario.direccion}">Calle Falsa 123</td>
+                    <td th:text="${usuario.correo}">correo@example.com</td>
+                    <td th:text="${usuario.metodoPago}">Nequi</td>
+                    <td th:text="${usuario.fechaNacimiento}">1990-01-01</td>
+                    <td th:text="${usuario.rol}">Cliente</td>
+                    <td th:text="${usuario.Estado}">Estado</td>
+                    <td>
+                        <form th:action="@{/private/actualizarEstado}" method="get">
+                            <input type="hidden" name="idUsuario" th:value="${usuario.id}"/>
+                            <select name="estado" class="form-control" required>
+                                <option disabled selected value="">Seleccionar</option>
+                                <option value="Deshabilitado">Deshabilitar</option>
+                                <option value="Habilitado">Habilitar</option>
+                            </select>
+                            <button type="submit">Actualizar</button>
+                        </form>
+                    </td>
+
+                </tr>
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="9">No hay usuarios registrados</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

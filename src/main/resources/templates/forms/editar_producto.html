@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de control</title>
+    <link rel="stylesheet" th:href="@{/css/panel.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="panel-control">
+
+<header class="Bienvenido">
+    <div class="header-left">
+        <img src="/img/logo.png" alt="Logo Agrosellnova" class="logo">
+        <span class="project-name">AGROSELLNOVA</span>
+    </div>
+
+    <div class="header-right">
+        <div class="user-info">
+            <p><strong th:text="'Bienvenido, ' + ${usuario}">Bienvenido, Usuario</strong></p>
+            <p><span th:text="'Rol: ' + ${rol}">Rol: Cliente</span></p>
+        </div>
+        <div class="icons">
+            <a th:href="@{/notificaciones}" title="Notificaciones"><i class="fas fa-bell"></i></a>
+            <a th:href="@{/private/perfil}" title="Perfil"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <aside class="sidebar">
+        <div class="lateral-content">
+            <ul>
+                <!-- PRODUCTOR -->
+                <li th:if="${rol == 'productor'}"><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/ofertar_producto}"><i class="fas fa-seedling"></i> Publicar Producto</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/reservar_producto}"><i class="fas fa-seedling"></i>Ofertar proximos a salir</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/gestionar_productos}"><i class="fas fa-boxes"></i> Gestionar Productos</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/gestionar_ventas}"><i class="fas fa-cash-register"></i> Gestionar Ventas</a></li>
+                <li th:if="${rol == 'productor'}"><a th:href="@{/private/buenas_practicas}"><i class="fas fa-leaf"></i> Buenas Prácticas</a></li>
+                <li><a th:href="@{/public/cerrar_sesion}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Formulario -->
+    <main class="ofertar-container">
+        <h2 class="ofertar-titulo">Editar Producto</h2>
+
+        <form th:action="@{/producto/editar}" th:object="${producto}" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="ofertar-form">
+                <label class="form-label">Nombre producto</label>
+                <input type="text" th:field="*{nombre}" class="form-control" required>
+                <div class="invalid-feedback">Por favor, escribe el nombre del producto.</div>
+            </div>
+
+            <div class="ofertar-form">
+                <label class="form-label">Precio del producto - POR Kg</label>
+                <input type="number" th:field="*{precio}" class="form-control" required>
+                <div class="invalid-feedback">Por favor, ingrese un precio.</div>
+            </div>
+
+            <div class="ofertar-form">
+                <label class="form-label">Descripción</label>
+                <textarea th:field="*{descripcion}" class="form-control" required></textarea>
+                <div class="invalid-feedback">Por favor, ingrese una descripción.</div>
+            </div>
+
+            <div class="ofertar-form">
+                <label class="form-label">Peso en KG</label>
+                <input type="number" th:field="*{pesoKg}" class="form-control" required>
+                <div class="invalid-feedback">Por favor, ingrese el peso.</div>
+            </div>
+
+            <div class="ofertar-form">
+                <label class="form-label">Stock</label>
+                <input type="number" th:field="*{stock}" class="form-control" required>
+                <div class="invalid-feedback">Por favor, ingrese el stock.</div>
+            </div>
+
+            <button type="submit" class="confirmar-oferta-btn">Guardar</button>
+        </form>
+    </main>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</body>
+</html>

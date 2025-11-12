@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body>
+<header class="top-bar">
+    <div class="header-content">
+        <img src="/img/logo.png" alt="Agrosell Nova" class="logo">
+        <h1 class="menu-title">AGROSELL NOVA</h1>
+
+        <div class="panel-option">
+            <button id="panelControl">
+                <a th:href="@{/private/panel_control}" class="menu-icon"><i class="fa fa-cog"></i></a>
+            </button>
+        </div>
+
+        <a th:href="@{/public/carrito}" class="menu-icon">
+            <i class="fas fa-shopping-cart"></i>
+        </a>
+
+        <span class="menu-notification">
+            <button id="notificationButton">
+                <i class="fas fa-bell menu-icon"></i>
+            </button>
+        </span>
+
+        <span class="username">
+            <th:block th:if="${usuario != null}">
+                <a th:text="${usuario}" th:href="@{/public/cerrar_sesion}"></a>
+            </th:block>
+            <th:block th:unless="${usuario != null}">
+                <a th:href="@{/public/index}">Iniciar sesión</a>
+            </th:block>
+        </span>
+
+        <a th:href="@{/private/perfil}" class="menu-icon">
+            <i class="bi bi-person-circle" style="font-size: 30px;"></i>
+        </a>
+    </div>
+</header>
+
+<nav class="menu-bar" id="menu-bar">
+    <button class="menu-toggle" id="menu-toggle">&#9776;</button>
+    <ul id="menu-items">
+        <li><a th:href="@{/public/inicio}"><i class="fas fa-home"></i> Inicio</a></li>
+        <li><a th:href="@{/public/productos}"><i class="fas fa-box"></i> Productos</a></li>
+        <li><a th:href="@{/public/reservas}"><i class="fas fa-bookmark"></i> Reservas</a></li>
+        <li><a th:href="@{/public/about_us}"><i class="fas fa-info-circle"></i> Sobre nosotros</a></li>
+        <li><a th:href="@{/public/contactanos}"><i class="fas fa-envelope"></i> Contáctanos</a></li>
+        <li><a th:href="@{/public/ayuda}"><i class="fas fa-question-circle"></i> Ayuda</a></li>
+    </ul>
+</nav>
+
+<main>
+    <section class="titulo-reservas">
+        <h1>Reserva tus productos próximos a salir</h1>
+    </section>
+
+    <section id="reservas" class="reserva-info-section">
+        <div th:if="${#lists.isEmpty(productos)}">
+            <p>No hay productos disponibles para reserva.</p>
+        </div>
+
+        <div class="producto-reserva" th:each="producto : ${productos}">
+            <img th:src="${producto.imagen}" th:alt="${producto.nombre}" class="producto-imagen-reserva">
+            <h3 th:text="${producto.nombre}">Nombre del producto</h3>
+            <p>Precio: $<span th:text="${#numbers.formatDecimal(producto.precio, 1, 'COMMA', '2', 'POINT')}">0</span></p>
+            <p><span th:text="${producto.descripcion}">Descripcion del producto</span> </p>
+            <p>Disponible desde: <span th:text="${producto.fechaCosecha}">00/00/0000</span></p>
+
+            <a th:href="@{/formulario_reserva(id=${producto.id})}" class="btn-reserva">Reservar</a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>Enlaces rápidos</h3>
+            <ul>
+                <li><a th:href="@{/public/inicio}">Inicio</a></li>
+<!--                <li><a th:href="@{/public/categorias}">Categorías</a></li>-->
+                <li><a th:href="@{/public/contactanos}">Contáctanos</a></li>
+                <li><a th:href="@{/public/about_us}">Sobre nosotros</a></li>
+                <li><a th:href="@{/public/mapa}">Mapa del sitio</a></li>
+                <li><a th:href="@{/public/404}">Error 404</a></li>
+                <li><a th:href="@{/public/500}">Error 500</a></li>
+                <li><a th:href="@{/public/dashboard}">Dashboard</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Contacto</h3>
+            <p>📍 Dirección: Calle Principal #123</p>
+            <p>📞 Teléfono: +57 123 456 789</p>
+            <p>📧 Email: <a href="mailto:info@agrosellnova.com">info@agrosellnova.com</a></p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Síguenos</h3>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Agrosell Nova. Todos los derechos reservados. <a th:href="@{/terminos}">Términos y condiciones</a></p>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    document.getElementById('notificationButton').addEventListener('click', function() {
+        alert("No tienes notificaciones pendientes");
+    });
+
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func.apply(this, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    window.addEventListener("scroll", debounce(function () {
+        const menuBar = document.querySelector(".menu-bar");
+        if (window.scrollY > 50) {
+            menuBar.classList.add("scrolled");
+        } else {
+            menuBar.classList.remove("scrolled");
+        }
+    }, 100));
+
+    const toggleButton = document.getElementById('menu-toggle');
+    const menuBar = document.getElementById('menu-bar');
+
+    toggleButton.addEventListener('click', () => {
+        menuBar.classList.toggle('active');
+    });
+</script>
+</body>
+</html>
